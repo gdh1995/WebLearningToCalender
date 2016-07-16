@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>WebLearningToCalender</Name>
+    <ProjectGuid>cad5305c-9c43-4a96-a514-3d5ded8f065e</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+    <AssemblyName>WebLearningToCalender</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="iCalcreator.php" />
+    <Compile Include="index.php" />
+    <Compile Include="lib\calendarComponent.class.php" />
+    <Compile Include="lib\iCal.tz.inc.php" />
+    <Compile Include="lib\iCal.vCard.inc.php" />
+    <Compile Include="lib\iCal.XML.inc.php" />
+    <Compile Include="lib\iCalBase.class.php" />
+    <Compile Include="lib\iCaldateTime.class.php" />
+    <Compile Include="lib\iCalUtilityFunctions.class.php" />
+    <Compile Include="lib\valarm.class.php" />
+    <Compile Include="lib\vcalendar.class.php" />
+    <Compile Include="lib\vevent.class.php" />
+    <Compile Include="lib\vfreebusy.class.php" />
+    <Compile Include="lib\vjournal.class.php" />
+    <Compile Include="lib\vtimezone.class.php" />
+    <Compile Include="lib\vtodo.class.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\" />
+    <Folder Include="lib\" />
+  </ItemGroup>
+</Project>
