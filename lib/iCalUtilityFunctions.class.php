@@ -1477,7 +1477,7 @@ class iCalUtilityFunctions {
  */
   public static function _setDate( $year, $month=FALSE, $day=FALSE, $hour=FALSE, $min=FALSE, $sec=FALSE, $tz=FALSE, $params=FALSE, $caller=null, $objName=null, $tzid=FALSE ) {
     $input = $parno = null;
-    $localtime = (( 'dtstart' == $caller ) && in_array( $objName, iCalUtilityFunctions::$tzComps )) ? TRUE : FALSE;
+    $localtime = (( 'dtstart' == $caller ) && in_array( $objName, array( 'vtimezone', 'standard', 'daylight' ) )) ? TRUE : FALSE;
     iCalUtilityFunctions::_strDate2arr( $year );
     if( iCalUtilityFunctions::_isArrayDate( $year )) {
       $input['value']  = iCalUtilityFunctions::_chkDateArr( $year, FALSE ); //$parno );

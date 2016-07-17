@@ -798,7 +798,7 @@ class calendarComponent  extends iCalBase {
  * @return void
  */
   function _makeDtstamp() {
-    $d    = gmdate( iCalUtilityFunctions::$fmt['YmdHis3'], time());
+    $d    = gmdate( 'Y-m-d-H-i-s', time());
     $date = explode( '-', $d );
     $this->dtstamp['value'] = array( 'year' => $date[0], 'month' => $date[1], 'day' => $date[2], 'hour' => $date[3], 'min' => $date[4], 'sec' => $date[5], 'tz' => 'Z' );
     $this->dtstamp['params'] = null;

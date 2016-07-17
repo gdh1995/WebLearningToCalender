@@ -76,7 +76,6 @@ if(!isset($_REQUEST['userid'])){
 }else{
     //现在应当看MyCourse.jsp?typepage=$page这一页
     $page=2;
-
     require_once "iCalcreator.php";
 
     function ExitCode($code,$disp=""){
@@ -127,6 +126,46 @@ if(!isset($_REQUEST['userid'])){
         // based on all start dates in events
         // (i.e. dtstart)
     }
+	class SharedVariable extends Stackable {
+		public function __construct($v) {
+			$this->merge($v);
+		}
+
+		public function run(){}
+	}
+    class workerThread extends Thread {
+        function __construct($id,$cookie,$shared){
+            $this->id=$id;
+			$this->cookie=$cookie;
+			$this->shared=$shared;
+        }
+
+        function run(){
+            //获取这门课的作业页
+            $ret=HttpGet("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id=".$this->id,$this->cookie);
+            //划分每个tr行
+            preg_match_all('/<tr class="tr\d">(.*?)<\/tr>/sm',$ret,$hws);
+            foreach ($hws[1] as $hw)
+            {
+                //划分出这项作业的每个td列
+                preg_match_all('/<td(.*?)>(.*?)<\/td>/sm',$hw,$tds);
+                //获取作业名称、id、截止日期、提交状态
+                preg_match('/<a(.*?)>(.*?)<\/a>/sm',$tds[2][0],$name);
+                $name=html_entity_decode($name[2]);
+                preg_match('/\?id=(\d*)/',$tds[2][0],$hwid);
+                $deadline=$tds[2][2];
+                $status=$tds[2][3];
+                //下面这一行应该去掉注释，已经提交的作业不添加了吧
+                //if(preg_match('/已经/',$status))continue;
+                //新建日历项
+                $this->lock();
+				$v=$this->shared[0];
+                NewEvent($v,$deadline,$name,$this->id.'-'.$hwid[1]);
+				$this->shared[0]=$v;
+                $this->unlock();
+            }
+        }
+    }
 
     $userid=GetField("userid");
     $userpass=GetField("userpass");
@@ -136,41 +175,33 @@ if(!isset($_REQUEST['userid'])){
     $ret=HttpGet("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp?userid=".urlencode($userid)."&userpass=".urlencode($userpass),$cookie);
     if(!preg_match('/loginteacher/',$ret))ExitCode(400,"登录失败");
     $v=NewCalender();
+	NewEvent($v,'','','');
+	$v=NewCalender();
 
+	$shared = new SharedVariable(array($v));
     //获取选中学期的课程列表
     $retc=HttpGet("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?typepage=$page",$cookie);
-
     //旧版学堂
     preg_match_all('/course_id=(\d*)/',$retc,$courses);
     $count=0;
+    $threads=array();
     foreach ($courses[1] as $courseid){
-        //获取这门课的作业页
-        $ret=HttpGet("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id=$courseid",$cookie);
-        //划分每个tr行
-        preg_match_all('/<tr class="tr\d">(.*?)<\/tr>/sm',$ret,$hws);
-        foreach ($hws[1] as $hw)
-        {
-            //划分出这项作业的每个td列
-            preg_match_all('/<td(.*?)>(.*?)<\/td>/sm',$hw,$tds);
-            //获取作业名称、id、截止日期、提交状态
-            preg_match('/<a(.*?)>(.*?)<\/a>/sm',$tds[2][0],$name);
-            $name=html_entity_decode($name[2]);
-            preg_match('/\?id=(\d*)/',$tds[2][0],$hwid);
-            $deadline=$tds[2][2];
-            $status=$tds[2][3];
-            //下面这一行应该去掉注释，已经提交的作业不添加了吧
-            //if(preg_match('/已经/',$status))continue;
-            //新建日历项
-            NewEvent($v,$deadline,$name,$courseid.'-'.$hwid[1]);
-        }
-        //这一行只是测试用，应当去掉
-        if(++$count==5)break;
+        $thread=new workerThread($courseid,$cookie,$shared);
+        array_push($threads,$thread);
+        $thread->start();
+        $count++;
+		//测试时不让它输出太多
+        //if($count==5)break;
     }
-
+    foreach ($threads as $thread)
+    {
+    	$thread->join();
+    }
     //新版学堂
     //太慢了，先不写
 
     //返回ics日历
-    $v->returnCalendar();
+    $v=$shared[0];
+	$v->returnCalendar();
 }
 ?>
