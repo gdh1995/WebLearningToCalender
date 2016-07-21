@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 if(!isset($_REQUEST['userid'])){
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -104,23 +105,25 @@ if(!isset($_REQUEST['userid'])){
         $config    = array( "unique_id" => "WLCal", "TZID" => "Asia/Beijing" );
         $vcalendar = new vcalendar( $config );
         $vcalendar->setProperty( "method",        "PUBLISH" );
-        $vcalendar->setProperty( "x-wr-calname",  "网络学堂" );
-        $vcalendar->setProperty( "X-WR-CALDESC",  "Deadline们" );
-        $uuid      = "f93a0cef-df07-4594-a6bd-ff709afefd33";
-        $vcalendar->setProperty( "X-WR-RELCALID", $uuid );
+        $vcalendar->setProperty( "CALSCALE",  "GREGORIAN" );
+        //$vcalendar->setProperty( "x-wr-calname",  "网络学堂" );
+        //$vcalendar->setProperty( "X-WR-CALDESC",  "Deadline们" );
+        //$uuid      = "f93a0cef-df07-4594-a6bd-ff709afefd33";
+        //$vcalendar->setProperty( "X-WR-RELCALID", $uuid );
         $vcalendar->setProperty( "X-WR-TIMEZONE", "Asia/Beijing" );
         return $vcalendar;
     }
     function NewEvent(&$v,$date,$summary,$uid){
         $tz = "Asia/Beijing";                                      // define time zone
         $vevent = $v->newComponent( "vevent" );                    // create next event calendar component
+		$tmr=date('Ymd', strtotime($date.' +1 day'));
         $date = preg_replace('/(.?+)-(.?+)-(.?+)/','$1$2$3',$date);
         $vevent->setProperty( "dtstart", $date, array("VALUE" => "DATE"));// alt. date format,
-		$vevent->setProperty( "dtend", $date, array("VALUE" => "DATE"));
+		$vevent->setProperty( "dtend", $tmr, array("VALUE" => "DATE"));
         //  now for an all-day event
         $vevent->setProperty( "summary", $summary );
         $vevent->setProperty( "uid",$uid);
-        $vevent->setProperty( "categories", "DEADLINE" );
+        //$vevent->setProperty( "categories", "DEADLINE" );
         $xprops = array( "X-LIC-LOCATION" => $tz );                // required of some calendar software
         iCalUtilityFunctions::createTimezone( $v, $tz, $xprops);   // create timezone component(-s)
         // based on all start dates in events
@@ -160,7 +163,7 @@ if(!isset($_REQUEST['userid'])){
                 //新建日历项
                 $this->lock();
 				$v=$this->shared[0];
-                NewEvent($v,$deadline,$name,$this->id.'-'.$hwid[1]);
+                NewEvent($v,$deadline,$name,$this->id.'-'.$hwid[1].'-v2');
 				$this->shared[0]=$v;
                 $this->unlock();
             }
@@ -191,7 +194,7 @@ if(!isset($_REQUEST['userid'])){
         $thread->start();
         $count++;
 		//测试时不让它输出太多
-        //if($count==5)break;
+        if($count==5)break;
     }
     foreach ($threads as $thread)
     {
