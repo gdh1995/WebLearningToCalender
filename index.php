@@ -45,8 +45,11 @@ if(!isset($_REQUEST['userid'])){
 			loadHtml();
 			loadStyleText(cssText);
 		}
+  window.onresize = function() {
     document.documentElement.style.height = Math.min(533, window.innerWidth) / 533.0 * 800 + "px";
     // document.documentElement.style.height = 800 + "px";
+  };
+  window.onresize();
 	</script>
   <form id="form1" name="form1" method="post" action="index.php">
     <label id="l-userid" for="userid">用户名</label>
