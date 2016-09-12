@@ -5,15 +5,11 @@ if(!isset($_REQUEST['userid'])){
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 <body>
-	<style type="text/css">
-	*{margin:0; padding:0;}
-	img{max-width: 100%; height: auto;}
-	.test{height: 600px; max-width: 600px; font-size: 40px;}
-	</style>
 	<script type="text/javascript">
 		function is_weixin() {
 		    var ua = navigator.userAgent.toLowerCase();
@@ -49,28 +45,49 @@ if(!isset($_REQUEST['userid'])){
 			loadHtml();
 			loadStyleText(cssText);
 		}
+    document.documentElement.style.height = Math.min(533, window.innerWidth) / 533.0 * 800 + "px";
+    // document.documentElement.style.height = 800 + "px";
 	</script>
-    <form id="form1" name="form1" method="get" action="index.php">
-        <label for="userid">用户名</label>
-        <input type="text" name="userid" id="userid" />
-        <label for="userpass">密码</label>
-        <input type="text" name="userpass" id="userpass" />
-        <input type="submit" name="submit" id="submit" value="提交" />
-    </form>
+  <form id="form1" name="form1" method="post" action="index.php">
+    <label id="l-userid" for="userid">用户名</label>
+    <input type="text" name="userid" id="userid" />
+    <label id="l-userpass" for="userpass">密码</label>
+    <input type="password" name="userpass" id="userpass" />
+    <input type="submit" id="main-submit" />
+  </form>
+  <script type="text/javascript">
+  document.getElementById("form1").onsubmit = function() {
+    var userid = document.getElementById("userid").value;
+    this.action = "index.php?userid=" + userid;
+  };
+  </script>
 </body>
 </html>
 <?php
-}else if(isset($_SERVER['HTTP_REFERER'])&&$_SERVER['HTTP_REFERER']!==''){
+}else if(isset($_POST['userid'])){
+  function GetField($name) {
+      $val="";
+      if(isset($_REQUEST[$name])) {
+        $val = $_REQUEST[$name];
+        setcookie($name, $val, time()+(3600*24*180), "/", "", FALSE, TRUE);
+      } else {
+        ExitCode(400);
+      }
+      return $val;
+  }
+  $userid = GetField("userid");
+  GetField("userpass");
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>更新Deadline</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
-<body>
-    <p>iPhone: 点击下方中间图标，选择“添加到主屏幕”。</p>
-    <p>Android: 添加书签，然后长按拖动到主屏幕。</p>
+<body class="succ"  >
 </body>
 </html>
 <?php
@@ -85,8 +102,18 @@ if(!isset($_REQUEST['userid'])){
         exit;
     }
     function GetField($name){
-        if(!isset($_REQUEST[$name]))ExitCode(400);
-        return $_REQUEST[$name];
+        $val="";
+        if(isset($_REQUEST[$name])) {
+          $val = $_REQUEST[$name];
+          if (!isset($_COOKIE[$name]) || $val !== $_COOKIE[$name]) {
+            setcookie($name, $val, time()+(3600*24*180), "/", "", FALSE, TRUE);
+          }
+        } else if (isset($_COOKIE[$name])) {
+          $val = $_COOKIE[$name];
+        } else {
+          ExitCode(400);
+        }
+        return $val;
     }
     function HttpGet($url,&$cookie=null){
         $ch=curl_init($url);
