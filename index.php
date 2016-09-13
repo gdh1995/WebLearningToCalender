@@ -6,6 +6,7 @@ if(!isset($_REQUEST['userid'])){
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>请您登录</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
@@ -86,7 +87,7 @@ if(!isset($_REQUEST['userid'])){
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>更新Deadline</title>
+    <title>用户信息保存成功</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
