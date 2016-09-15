@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8">
+    <title>请您登录 - 添加网络学堂DDL</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+  <div id="weixin-tip"><p><img src="imgs/live_weixin.png" alt="请用外部浏览器打开" title="请用外部浏览器打开"></p></div>
+  <form id="form1" name="form1" method="post" data-action="https://166.111.82.118/learn/index.php" action="#">
+    <label id="l-userid" for="userid" data-left="0.246" data-top="0.685">用户名</label>
+    <input type="text" name="userid" id="userid" data-left="0.39" data-top="0.685"/>
+    <label id="l-userpass" for="userpass" data-left="0.246" data-top="0.742">密码</label>
+    <input type="password" name="userpass" id="userpass" data-left="0.39" data-top="0.742" />
+    <input type="submit" id="main-submit" data-left="0.34" data-top="0.8" />
+  </form>
+  <script type="text/javascript">
+		var isWeixin = !!navigator.userAgent.match(/MicroMessenger/i);
+		if (isWeixin) {
+      document.getElementById("weixin-tip").style.display = "block";
+      document.documentElement.style.height = "100%";
+      document.documentElement.style.overflow = "hidden";
+		}
+    function prevent(event) {
+      event.preventDefault && event.preventDefault();
+      return event.returnValue = false;
+    }
+  document.getElementById("form1").onsubmit = function(event) {
+    if (isWeixin) {
+      alert("请用微信外浏览器打开");
+      return prevent(event);
+    }
+    var userid = document.getElementById("userid").value
+      , passwd = document.getElementById("userpass").value;
+    if (!userid || !passwd) {
+      alert("请输入您的info用户名和密码！");
+      return prevent(event);
+    }
+    this.action = this.getAttribute("data-action") + "?userid=" + userid;
+  };
+  window.onresize = function() {
+    var width = document.body.clientWidth, height;
+    window.onload = null;
+    height = Math.min(533, width) / 533.0 * 800;
+    document.documentElement.style.height = height + "px";
+    var nodes = document.querySelectorAll("label,input");
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i], left, top;
+      left = +node.getAttribute("data-left");
+      top = +node.getAttribute("data-top");
+      node.style.left = width * left + "px";
+      node.style.top = height * top + "px";
+    }
+  };
+  window.onresize();
+  </script>
+</body>
+</html>
