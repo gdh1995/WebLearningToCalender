@@ -27,7 +27,7 @@ function GetField($name){
     } else if (isset($_COOKIE[$name])) {
       $val = $_COOKIE[$name];
     } else {
-      ExitCode(400);
+      ExitCode(400, '缺少参数：'.$name);
     }
     return $val;
 }
@@ -46,7 +46,7 @@ function HttpGet($url, &$cookie=null){
 }
 function ExitCode($code, $disp=""){
     http_response_code($code);
-    if($disp!=="")print($disp);
+    if($disp!=="")print('<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"/></head><body><h3>'.$disp.'</h3></body></html>');
     exit;
 }
 
@@ -58,10 +58,26 @@ if (isset($_POST['userid'])) {
   $userpass = GetField("userpass");
 }
 $cookie="";
+// $private_key = file_get_contents("l2c.pem");
+// $pi_key = openssl_pkey_get_private($private_key);
+$decrypted = $userpass;
+// openssl_private_decrypt(base64_decode($userpass), $decrypted, $pi_key);
+$userpass = $decrypted;
+
+if ($userpass == "") {
+  ExitCode(400, '密码解析失败。 <a href="javascript:history.go(-1);">返回上一页重试。</a>');
+}
+
 //登录
 $ret=HttpGet("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp?userid=".urlencode($userid)."&userpass=".urlencode($userpass),$cookie);
+$userpass = "";
+$decrypted = "";
 if(!preg_match('/loginteacher/',$ret)) {
-  ExitCode(400, '登录失败。 <a href="javascript:history.go(-1)">返回上一页。</a>');
+  $str = '登录失败。';
+  if (isset($_POST['userid'])) {
+    $str = $str.' <a href="javascript:history.go(-1)">点我返回上一页。</a>';
+  }
+  ExitCode(400, $str);
 }
 
 if (isset($_POST['userid'])) {

@@ -6,6 +6,7 @@
     <title>请您登录 - 添加网络学堂DDL</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" type="text/css" href="main.css" />
+	<!-- <script type="text/javascript" src="rsa-encoder.js" defer async></script> -->
 </head>
 <body>
   <div id="weixin-tip"><p><img src="imgs/live_weixin.png" alt="请用外部浏览器打开" title="请用外部浏览器打开"></p></div>
@@ -33,13 +34,32 @@
       return prevent(event);
     }
     var userid = document.getElementById("userid").value
-      , passwd = document.getElementById("userpass").value;
-    if (!userid || !passwd) {
+			, passwdNode = document.getElementById("userpass");
+    if (!userid || !passwdNode.value) {
       alert("请输入您的info用户名和密码！");
       return prevent(event);
     }
     this.action = this.getAttribute("data-action") + "?userid=" + userid;
+		// passwdNode.value = rsa_enc(passwdNode.value);
   };
+	function rsa_enc(str) {
+		var key, exp = "10001", modulus =
+"00c817d03b62e447ce58985d235e4eff5121ca4d18f8fddb6694a254ece0b750fcee924eec603086c558a95083a98982cfb0da8e4f8f3214cd3c8f564c6a14c1f39c70d4597b1a1ed7441ef94d6fb162cacb6d67000a4136af2b2d7d7b27c3c0e911b25ed9cb3309b06b82a8f1f7bf0ebed933e399e61ea244923f81fb5e6cda91"
+;
+		setMaxDigits(150);
+		key = new RSAKeyPair(exp, "", modulus);
+		return encryptedString(key, str);
+	}
+	document.getElementById("userid").onfocus =
+	document.getElementById("userpass").onfocus = function() {
+		var i = (+this.getAttribute("data-top"));
+		i = i * document.documentElement.clientHeight - (window.innerHeight * 0.5);
+		var old = window.scrollTop;
+		if (i <= old) { return; }
+		while (window.scrollTop === old) {
+			window.scrollTop = i--;
+		}
+	};
   window.onresize = function() {
     var width = document.body.clientWidth, height;
     window.onload = null;
